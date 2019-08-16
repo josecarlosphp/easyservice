@@ -1,0 +1,12 @@
+/nbproject/private/
+/vendor/
+/nbproject/
+/q/test/
+/composer.lock
+/_debug/
+/_inc/
+/_sess/
+/_log/
+/.htaccess
+/q/
+/index.php
