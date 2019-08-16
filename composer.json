@@ -1,0 +1,25 @@
+{
+    "name": "josecarlosphp/easyservice",
+    "description": "Webservice made easy.",
+    "keywords": [
+        "PHP", "service", "webservice"
+    ],
+    "homepage": "https://github.com/josecarlosphp/easyservice",
+    "type": "library",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "José Carlos Cruz Parra",
+            "homepage": "https://programadorphpfreelance.com/"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "josecarlosphp\\easyservice\\": "src/"
+        }
+    },
+    "require": {
+        "mustangostang/spyc": "^0.6.2",
+        "josecarlosphp/functions": "dev-master"
+    }
+}
