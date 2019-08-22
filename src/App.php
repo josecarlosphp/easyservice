@@ -184,9 +184,19 @@ class App
 
     public function logging($str, $q='general')
     {
-        $fp = fopen($this->dirLog.$q.'.'.date('Y-m').'.log', 'a');
-        fwrite($fp, sprintf('[%s] - %s%s', date('Y-m-d H:i:s'), $str, "\n"));
-        fclose($fp);
+        $dir = $this->dirLog.date('Y/m/');
+        if(makeDir($dir))
+        {
+            if(($fp = fopen($dir.date('Y-m-d').'.'.$q.'.log', 'a')))
+            {
+                $r = fwrite($fp, sprintf('[%s] - %s%s', date('Y-m-d H:i:s'), $str, "\n"));
+                fclose($fp);
+
+                return $r > 0;
+            }
+        }
+
+        return false;
     }
 
     public static function yamlRead($filename)
