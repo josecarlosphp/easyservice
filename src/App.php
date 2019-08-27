@@ -101,7 +101,7 @@ class App
         $action = isset($_GET['action']) ? LimpiarData($_GET['action']) : '';
         $params = $_REQUEST; //$_POST
 
-        $headers = getallheaders();
+        $headers = self::getAllHeaders();
         $token = isset($headers['Ocp-Apim-Subscription-Key']) ? $headers['Ocp-Apim-Subscription-Key'] : (isset($params['token']) ? LimpiarData($params['token']) : '');
 
         $this->debugging('get', $_GET);
