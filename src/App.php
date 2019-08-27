@@ -98,7 +98,7 @@ class App
         $this->logging('$_REQUEST = '.var_export($_REQUEST, true));
 
         $q = isset($_GET['q']) ? LimpiarData($_GET['q']) : '';
-        $action = isset($_GET['action']) ? LimpiarData($_GET['action']) : '';
+        $action = isset($_GET['action']) ? mb_strtolower(LimpiarData($_GET['action'])) : '';
         $params = $_REQUEST; //$_POST
 
         $headers = self::getAllHeaders();
@@ -139,11 +139,11 @@ class App
 
                     switch($action)
                     {
-                        case 'Open':
+                        case 'open':
                             $session = new \MySession();
                             $token = $session->GetId();
                             break;
-                        case 'Close':
+                        case 'close':
                             if(!\MySession::Destroy($token))
                             {
                                 $this->doResult(\MyServiceResponse::STATUS_ERROR, MySession::Exists($token) ? 'Can not destroy session' : 'Bad token');
@@ -162,11 +162,11 @@ class App
 
                     switch($action)
                     {
-                        case 'Open':
+                        case 'open':
                             $session->Set($token, 'sessid');
                             $app->doResult(\MyServiceResponse::STATUS_OK, $token);
                             break;
-                        case 'Close':
+                        case 'close':
                             $app->doResult(\MyServiceResponse::STATUS_OK, null);
                             break;
                         default:
