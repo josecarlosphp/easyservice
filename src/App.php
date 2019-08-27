@@ -153,7 +153,7 @@ class App
                             $session = new \MySession();
                             if($session->Load($token) === false || $session->Get('sessid') != $token)
                             {
-                                $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Bad token: '.$token);
+                                $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Bad token: '.$token, 401);
                             }
                             break;
                     }
@@ -176,7 +176,7 @@ class App
                 }
                 else
                 {
-                    $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Unknown action: '.$action);
+                    $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Unknown action: '.$action, 400);
                 }
             }
 
@@ -188,9 +188,10 @@ class App
         exit;
     }
 
-    protected function doResult($status, $content)
+    protected function doResult($status, $content, $code=200)
     {
         $this->logging('[Result: '.$status.'] '.var_export($content, true), 'general');
+        http_response_code($code);
         header('Content-Type: application/json');
         echo json_encode(array(
             'status'=>$status,
