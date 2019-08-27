@@ -71,7 +71,7 @@ class App
                         {
                             foreach($rx_matches as $ak_key => $ak_val)
                             {
-                                $rx_matches[$ak_key] = ucfirst($ak_val);
+                                $rx_matches[$ak_key] = ucfirst(mb_strtolower($ak_val));
                             }
                             $arh_key = implode('-', $rx_matches);
                         }
