@@ -51,6 +51,41 @@ class App
             );
     }
 
+    public static function getAllHeaders()
+    {
+        if(!function_exists('getallheaders'))
+        {
+            function getallheaders()
+            {
+                $arh = array();
+                $rx_http = '/\AHTTP_/';
+                foreach($_SERVER as $key => $val)
+                {
+                    if(preg_match($rx_http, $key))
+                    {
+                        $arh_key = preg_replace($rx_http, '', $key);
+                        // do some nasty string manipulations to restore the original letter case
+                        // this should work in most cases
+                        $rx_matches = explode('_', $arh_key);
+                        if(count($rx_matches) > 0 and strlen($arh_key) > 2 )
+                        {
+                            foreach($rx_matches as $ak_key => $ak_val)
+                            {
+                                $rx_matches[$ak_key] = ucfirst($ak_val);
+                            }
+                            $arh_key = implode('-', $rx_matches);
+                        }
+                        $arh[$arh_key] = $val;
+                    }
+                }
+
+                return $arh;
+            }
+        }
+
+        return getallheaders();
+    }
+
     public function run()
     {
         global $app; //Para que esté disponible, por ejemplo para $app->debugging()
@@ -63,7 +98,7 @@ class App
         $this->logging('$_REQUEST = '.var_export($_REQUEST, true));
 
         $q = isset($_GET['q']) ? LimpiarData($_GET['q']) : '';
-        $action = isset($_GET['action']) ? mb_strtolower(LimpiarData($_GET['action'])) : '';
+        $action = isset($_GET['action']) ? LimpiarData($_GET['action']) : '';
         $params = $_REQUEST; //$_POST
 
         $headers = getallheaders();
@@ -104,11 +139,11 @@ class App
 
                     switch($action)
                     {
-                        case 'open':
+                        case 'Open':
                             $session = new \MySession();
                             $token = $session->GetId();
                             break;
-                        case 'close':
+                        case 'Close':
                             if(!\MySession::Destroy($token))
                             {
                                 $this->doResult(\MyServiceResponse::STATUS_ERROR, MySession::Exists($token) ? 'Can not destroy session' : 'Bad token');
@@ -127,11 +162,11 @@ class App
 
                     switch($action)
                     {
-                        case 'open':
+                        case 'Open':
                             $session->Set($token, 'sessid');
                             $app->doResult(\MyServiceResponse::STATUS_OK, $token);
                             break;
-                        case 'close':
+                        case 'Close':
                             $app->doResult(\MyServiceResponse::STATUS_OK, null);
                             break;
                         default:
