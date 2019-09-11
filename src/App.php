@@ -151,9 +151,13 @@ class App
                             break;
                         default:
                             $session = new \MySession();
-                            if($session->Load($token) === false || $session->Get('sessid') != $token)
+                            if($session->Load($token) === false)
                             {
-                                $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Bad token: '.$token, 401);
+                                $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Bad token', 401);
+                            }
+                            elseif($session->Get('sessid') != $token)
+                            {
+                                $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Mismatch token', 401);
                             }
                             break;
                     }
