@@ -107,6 +107,7 @@ class App
         $this->debugging('get', $_GET);
         $this->debugging('post', $_POST);
         $this->debugging('headers', $headers);
+        $this->debugging('body', file_get_contents('php://input'));
 
         if($q && $action)
         {
