@@ -11,11 +11,26 @@ include_once '_inc/classes/MyServiceResponse.class.php';
 
 class App
 {
+    /**
+     * @var boolean
+     */
     private $debug;
-
+    /**
+     * @var string
+     */
     private $dirSess = '_sess';
+    /**
+     * @var string
+     */
     private $dirLog = '_log';
+    /**
+     * @var string
+     */
     private $dirDebug = '_debug';
+    /**
+     * @var MySession
+     */
+    private $session;
 
     public function __construct($debug=false, $config=array())
     {
@@ -141,8 +156,8 @@ class App
                     switch($action)
                     {
                         case 'open':
-                            $session = new \MySession();
-                            $token = $session->GetId();
+                            $this->session = new \MySession();
+                            $token = $this->session->GetId();
                             break;
                         case 'close':
                             if(!\MySession::Destroy($token))
@@ -151,12 +166,12 @@ class App
                             }
                             break;
                         default:
-                            $session = new \MySession();
-                            if($session->Load($token) === false)
+                            $this->session = new \MySession();
+                            if($this->session->Load($token) === false)
                             {
                                 $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Bad token', 401);
                             }
-                            elseif($session->Get('sessid') != $token)
+                            elseif($this->session->Get('sessid') != $token)
                             {
                                 $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Mismatch token', 401);
                             }
@@ -168,7 +183,7 @@ class App
                     switch($action)
                     {
                         case 'open':
-                            $session->Set($token, 'sessid');
+                            $this->session->Set($token, 'sessid');
                             $app->doResult(\MyServiceResponse::STATUS_OK, $token);
                             break;
                         case 'close':
@@ -238,6 +253,16 @@ class App
         }
 
         return false;
+    }
+
+    public function SessionSet($val, $key0, $key1=null, $key2=null, $key3=null, $key4=null, $key5=null)
+    {
+        return $this->session->Set($val, $key0, $key1, $key2, $key3, $key4, $key5);
+    }
+
+    public function SessionGet($key0, $key1=null, $key2=null, $key3=null, $key4=null, $key5=null)
+    {
+        return $this->session->Get($key0, $key1, $key2, $key3, $key4, $key5);
     }
 
     public static function yamlRead($filename)
