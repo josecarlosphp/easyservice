@@ -28,17 +28,21 @@ class App
      */
     private $dirDebug = '_debug';
     /**
+     * @var boolean
+     */
+    private $useArray = false;
+    /**
      * @var MySession
      */
     private $session;
 
-    public function __construct($debug=false, $config=array())
+    public function __construct($debug=false, $props=array())
     {
         $this->debug($debug);
 
-        foreach($config as $key=>$val)
+        foreach($props as $key=>$val)
         {
-            if(property_exists($this, $key))
+            if(property_exists($this, $key) && $key != 'session')
             {
                 $this->$key = $val;
             }
@@ -217,6 +221,18 @@ class App
 
     protected function doResult($status, $content, $code=200)
     {
+        if($this->useArray)
+        {
+            if(is_string($content))
+            {
+                $content = array($content);
+            }
+            elseif(is_null($content))
+            {
+                $content = array();
+            }
+        }
+
         $this->logging('[Result: '.$status.'] '.var_export($content, true), 'general');
         http_response_code($code);
         header('Content-Type: application/json');
