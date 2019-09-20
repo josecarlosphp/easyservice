@@ -66,6 +66,26 @@ class App
             );
     }
 
+    public static function getConfig($q)
+    {
+        $config = self::getDefaultConfig();
+
+        $filename = 'q/'.LimpiarData($q).'/config.yml';
+        if(is_file($filename))
+        {
+            $aux = self::yamlRead($filename);
+            foreach($aux as $key=>$val)
+            {
+                if(array_key_exists($key, $config))
+                {
+                    $config[$key] = $val;
+                }
+            }
+        }
+
+        return $config;
+    }
+
     public static function getAllHeaders()
     {
         if(!function_exists('getallheaders'))
@@ -136,20 +156,7 @@ class App
                         include $filename;
                     }
 
-                    $config = self::getDefaultConfig();
-
-                    $filename = 'q/'.$q.'/config.yml';
-                    if(is_file($filename))
-                    {
-                        $aux = self::yamlRead($filename);
-                        foreach($aux as $key=>$val)
-                        {
-                            if(array_key_exists($key, $config))
-                            {
-                                $config[$key] = $val;
-                            }
-                        }
-                    }
+                    $config = self::getConfig($q);
 
                     \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlenght']);
 
