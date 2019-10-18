@@ -219,28 +219,45 @@ class App
         exit;
     }
 
-    protected function doResult($status, $content, $code=200)
+    protected function doResult($status, $content, $code=200, $type='json')
     {
-        if($this->useArray)
+        if($type != 'json' && $status != \MyServiceResponse::STATUS_OK)
         {
-            if(is_string($content))
-            {
-                $content = array($content);
-            }
-            elseif(is_null($content))
-            {
-                $content = array();
-            }
+            $type = 'json';
         }
 
-        $this->logging('[Result: '.$status.'] '.var_export($content, true), 'general');
         http_response_code($code);
-        header('Content-Type: application/json');
-        echo json_encode(array(
-            'status'=>$status,
-            'content'=>$content,
-        ));
-        exit;
+        switch($type)
+        {
+            case 'csv':
+                header('Content-Type: text/csv');
+                echo $content;
+                break;
+            case 'json':
+            default:
+                if($this->useArray)
+                {
+                    if(is_string($content))
+                    {
+                        $content = array($content);
+                    }
+                    elseif(is_null($content))
+                    {
+                        $content = array();
+                    }
+                }
+
+                $this->logging('[Result: '.$status.'] '.var_export($content, true), 'general');
+
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    'status'=>$status,
+                    'content'=>$content,
+                ));
+                break;
+        }
+
+        exit; //!!!
     }
 
     public function debug($debug=null)
