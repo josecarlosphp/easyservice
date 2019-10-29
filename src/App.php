@@ -257,7 +257,7 @@ class App
                 ));
 
                 header('Content-Type: application/json');
-                
+
                 break;
         }
 
@@ -281,8 +281,15 @@ class App
     {
         if($this->debug)
         {
-            file_put_contents($this->dirDebug.$q, var_export($var, true));
+			if(makeDir(dirname($this->dirDebug.$q)))
+			{
+				return file_put_contents($this->dirDebug.$q, var_export($var, true)) !== false;
+			}
+
+			return false;
         }
+
+		return true;
     }
 
     public function logging($str, $q='general')
