@@ -259,7 +259,7 @@ class App
                 break;
         }
 
-        header('Content-length: '.mb_strlen($content));
+        header('Content-length: '.strlen($content)); //¡OJO! no vale mb_strlen
         echo $content;
 
         exit; //!!!
