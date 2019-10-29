@@ -143,10 +143,12 @@ class App
         $headers = self::getAllHeaders();
         $token = isset($headers['Ocp-Apim-Subscription-Key']) ? $headers['Ocp-Apim-Subscription-Key'] : (isset($params['token']) ? LimpiarData($params['token']) : '');
 
-        $this->debugging('get', $_GET);
-        $this->debugging('post', $_POST);
-        $this->debugging('headers', $headers);
-        $this->debugging('body', file_get_contents('php://input'));
+        $aux = $q.'/'.ponerBarra($action);
+        $this->debugging($aux.'get', $_GET);
+        $this->debugging($aux.'post', $_POST);
+        $this->debugging($aux.'headers', $headers);
+        $this->debugging($aux.'body', file_get_contents('php://input'));
+        unset($aux);
 
         if($q && $action)
         {
