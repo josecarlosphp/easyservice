@@ -249,7 +249,7 @@ class App
                     }
                 }
 
-                $this->logging('[Result: '.$status.'] '.var_export($content, true), 'general');
+                $this->logging('[Result: '.$status.'] '.var_export($content, true));
 
                 $content = json_encode(array(
                     'status'=>$status,
