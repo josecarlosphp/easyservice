@@ -231,7 +231,7 @@ class App
         {
             case 'csv':
                 header('Content-Type: text/csv');
-                echo $content;
+
                 break;
             case 'json':
             default:
@@ -249,13 +249,18 @@ class App
 
                 $this->logging('[Result: '.$status.'] '.var_export($content, true), 'general');
 
-                header('Content-Type: application/json');
-                echo json_encode(array(
+                $content = json_encode(array(
                     'status'=>$status,
                     'content'=>$content,
                 ));
+
+                header('Content-Type: application/json');
+                
                 break;
         }
+
+        header('Content-length: '.mb_strlen($content));
+        echo $content;
 
         exit; //!!!
     }
