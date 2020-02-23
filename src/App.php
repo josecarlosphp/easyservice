@@ -35,6 +35,10 @@ class App
      * @var MySession
      */
     private $session;
+    /**
+     * @var string
+     */
+    private $clientIp;
 
     public function __construct($debug=false, $props=array())
     {
@@ -123,6 +127,16 @@ class App
         }
 
         return getallheaders();
+    }
+
+    public function getClientIp()
+    {
+        if(empty($this->clientIp))
+        {
+            $this->clientIp = GetClientIP();
+        }
+
+        return $this->clientIp;
     }
 
     public function run()
@@ -299,7 +313,7 @@ class App
         {
             if(($fp = fopen($dir.date('Y-m-d').'.'.$q.'.log', 'a')))
             {
-                $r = fwrite($fp, sprintf('[%s] - %s%s', date('Y-m-d H:i:s'), $str, "\n"));
+                $r = fwrite($fp, sprintf('[%s] %s - %s%s', date('Y-m-d H:i:s'), $this->getClientIp(), $str, "\n"));
                 fclose($fp);
 
                 return $r > 0;
