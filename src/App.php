@@ -46,7 +46,7 @@ class App
 
         foreach($props as $key=>$val)
         {
-            if(property_exists($this, $key) && $key != 'session')
+            if(property_exists($this, $key) && !in_array($key, array('session', 'clientIp')))
             {
                 $this->$key = $val;
             }
