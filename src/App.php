@@ -249,6 +249,10 @@ class App
                 header('Content-Type: text/csv');
 
                 break;
+            case 'pdf':
+                header('Content-Type: application/pdf');
+
+                break;
             case 'json':
             default:
                 if($this->useArray)
