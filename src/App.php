@@ -154,7 +154,7 @@ class App
 
         $this->logging('$_REQUEST = '.var_export($_REQUEST, true));
 
-        $q = isset($_GET['q']) ? LimpiarData($_GET['q']) : '';
+        $q = $this->alias(isset($_GET['q']) ? LimpiarData($_GET['q']) : '');
         $action = isset($_GET['action']) ? mb_strtolower(LimpiarData($_GET['action'])) : '';
         $params = $_REQUEST; //$_POST
 
