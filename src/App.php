@@ -350,12 +350,18 @@ class App
     {
         return file_put_contents($filename, \Spyc::YAMLDump($data, 4, 0, true));
     }
-
-    public static function alias($alias, $action=null)
+    /**
+     * Alias de servicio.
+     *
+     * @param string $alias
+     * @param string $service
+     * @return string
+     */
+    public static function alias($alias, $service=null)
     {
-        if(!is_null($action))
+        if(!is_null($service))
         {
-            $this->aliases[$alias] = $action;
+            $this->aliases[$alias] = $service;
         }
 
         return isset($this->aliases[$alias]) ? $this->aliases[$alias] : $alias;
