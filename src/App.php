@@ -39,6 +39,10 @@ class App
      * @var string
      */
     private $clientIp;
+    /**
+     * @var array
+     */
+    private $aliases = array();
 
     public function __construct($debug=false, $props=array())
     {
@@ -345,5 +349,15 @@ class App
     public static function yamlWrite($filename, $data)
     {
         return file_put_contents($filename, \Spyc::YAMLDump($data, 4, 0, true));
+    }
+
+    public static function alias($alias, $action=null)
+    {
+        if(!is_null($action))
+        {
+            $this->aliases[$alias] = $action;
+        }
+
+        return isset($this->aliases[$alias]) ? $this->aliases[$alias] : $alias;
     }
 }
