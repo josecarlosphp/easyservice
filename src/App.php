@@ -40,6 +40,10 @@ class App
      */
     private $clientIp;
     /**
+     * @var string
+     */
+    private $q;
+    /**
      * @var array
      */
     private $aliases = array();
@@ -152,37 +156,38 @@ class App
             $app = $this; //Por si la variable se ha declarado con otro nombre
         }
 
+        $this->q = $this->alias(isset($_GET['q']) ? LimpiarData($_GET['q']) : '');
+
         $this->logging('$_REQUEST = '.var_export($_REQUEST, true));
 
-        $q = $this->alias(isset($_GET['q']) ? LimpiarData($_GET['q']) : '');
         $action = isset($_GET['action']) ? mb_strtolower(LimpiarData($_GET['action'])) : '';
         $params = $_REQUEST; //$_POST
 
         $headers = self::getAllHeaders();
         $token = isset($headers['Ocp-Apim-Subscription-Key']) ? $headers['Ocp-Apim-Subscription-Key'] : (isset($params['token']) ? LimpiarData($params['token']) : '');
 
-        $aux = $q.'/'.ponerBarra($action);
+        $aux = $this->q.'/'.ponerBarra($action);
         $this->debugging($aux.'get', $_GET);
         $this->debugging($aux.'post', $_POST);
         $this->debugging($aux.'headers', $headers);
         $this->debugging($aux.'body', file_get_contents('php://input'));
         unset($aux);
 
-        if($q && $action)
+        if($this->q && $action)
         {
-            if(is_dir('q/'.$q))
+            if(is_dir('q/'.$this->q))
             {
-                if(is_file('q/'.$q.'/'.$action.'.php'))
+                if(is_file('q/'.$this->q.'/'.$action.'.php'))
                 {
-                    $filename = 'q/'.$q.'/_inc/functions.inc.php';
+                    $filename = 'q/'.$this->q.'/_inc/functions.inc.php';
                     if(is_file($filename))
                     {
                         include $filename;
                     }
 
-                    $config = self::getConfig($q);
+                    $config = self::getConfig($this->q);
 
-                    \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlenght']);
+                    \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$this->q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlenght']);
 
                     switch($action)
                     {
@@ -209,7 +214,7 @@ class App
                             break;
                     }
 
-                    include 'q/'.$q.'/'.$action.'.php';
+                    include 'q/'.$this->q.'/'.$action.'.php';
 
                     switch($action)
                     {
@@ -299,13 +304,13 @@ class App
         return $this->debug;
     }
 
-    public function debugging($q, $var)
+    public function debugging($k, $var)
     {
         if($this->debug)
         {
-			if(makeDir(dirname($this->dirDebug.$q)))
+			if(makeDir(dirname($this->dirDebug.$k)))
 			{
-				return file_put_contents($this->dirDebug.$q, var_export($var, true)) !== false;
+				return file_put_contents($this->dirDebug.$k, var_export($var, true)) !== false;
 			}
 
 			return false;
@@ -313,13 +318,13 @@ class App
 
 		return true;
     }
-
-    public function logging($str, $q='general')
+    //TODO: Reorganizar carpetas y archivos log
+    public function logging($str)
     {
         $dir = $this->dirLog.date('Y/m/');
         if(makeDir($dir))
         {
-            if(($fp = fopen($dir.date('Y-m-d').'.'.$q.'.log', 'a')))
+            if(($fp = fopen($dir.date('Y-m-d').'.'.$this->q.'.log', 'a')))
             {
                 $r = fwrite($fp, sprintf('[%s] %s - %s%s', date('Y-m-d H:i:s'), $this->getClientIp(), $str, "\n"));
                 fclose($fp);
