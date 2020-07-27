@@ -357,7 +357,7 @@ class App
      * @param string $service
      * @return string
      */
-    public static function alias($alias, $service=null)
+    public function alias($alias, $service=null)
     {
         if(!is_null($service))
         {
