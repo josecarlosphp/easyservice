@@ -371,4 +371,14 @@ class App
 
         return isset($this->aliases[$alias]) ? $this->aliases[$alias] : $alias;
     }
+    /**
+     * Obtiene el valor actual de la propiedad $q,
+     * que indica el servicio solicitado.
+     * 
+     * @return string
+     */
+    public function q()
+    {
+        return $this->q;
+    }
 }
