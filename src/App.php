@@ -267,6 +267,10 @@ class App
                 header('Content-Type: application/pdf');
 
                 break;
+            case 'jpg':
+                header('Content-Type: image/jpg');
+
+                break;
             case 'json':
             default:
                 if($this->useArray)
