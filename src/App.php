@@ -219,7 +219,11 @@ class App
                             break;
                     }
 
-                    include 'q/'.$this->q.'/'.$action.'.php';
+                    try {
+                        include 'q/'.$this->q.'/'.$action.'.php';
+                    } catch (Exception $ex) {
+                        $app->doResult(MyServiceResponse::STATUS_ERROR, $ex->getMessage(), 400);
+                    }
 
                     switch($action)
                     {
