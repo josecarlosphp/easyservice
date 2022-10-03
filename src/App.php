@@ -77,8 +77,9 @@ class App
     public static function getDefaultConfig()
     {
         return array(
-            'tokenlifetime'=>90,
-            'tokenlenght'=>64,
+            'autoopen' => false,
+            'tokenlifetime' => 90,
+            'tokenlenght' => 64,
             );
     }
 
@@ -203,7 +204,11 @@ class App
                             break;
                         default:
                             $this->session = new \MySession();
-                            if($this->session->Load($token) === false)
+                            if($token == '' && $config['autoopen'])
+                            {
+                                $token = $this->session->GetId();
+                            }
+                            elseif($this->session->Load($token) === false)
                             {
                                 $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Bad token', 401);
                             }
@@ -374,7 +379,7 @@ class App
     /**
      * Obtiene el valor actual de la propiedad $q,
      * que indica el servicio solicitado.
-     * 
+     *
      * @return string
      */
     public function q()
