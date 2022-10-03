@@ -271,6 +271,14 @@ class App
                 header('Content-Type: image/jpg');
 
                 break;
+            case 'txt':
+                header('Content-Type: text/plain');
+
+                break;
+            case 'html':
+                header('Content-Type: text/html');
+
+                break;
             case 'json':
             default:
                 if($this->useArray)
