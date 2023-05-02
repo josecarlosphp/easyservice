@@ -164,8 +164,27 @@ class App
         $action = isset($_GET['action']) ? mb_strtolower(LimpiarData($_GET['action'])) : '';
         $params = $_REQUEST; //$_POST
 
+        $token = '';
         $headers = self::getAllHeaders();
-        $token = isset($headers['Ocp-Apim-Subscription-Key']) ? $headers['Ocp-Apim-Subscription-Key'] : (isset($params['token']) ? LimpiarData($params['token']) : '');
+        if (isset($headers['Authentication'])) {
+            if (strpos($headers['Authentication'], ' ') === false) {
+                $token = $headers['Authentication'];
+            } else {
+                $aux = explode(' ', $headers['Authentication']);
+                switch (strtolower($aux[0])) {
+                    case 'basic':
+                        $token = trim($aux[1]);
+                        break;
+                    default:
+                        $this->doResult(\MyServiceResponse::STATUS_ERROR, 'Unsupported auth scheme', 401);
+                        break;
+                }
+            }
+        } elseif (isset($headers['Ocp-Apim-Subscription-Key'])) {
+            $token = $headers['Ocp-Apim-Subscription-Key'];
+        } elseif (isset($params['token'])) {
+            $token = LimpiarData($params['token']);
+        }
 
         $aux = $this->q.'/'.ponerBarra($action);
         $this->debugging($aux.'get', $_GET);
