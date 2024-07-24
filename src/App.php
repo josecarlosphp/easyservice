@@ -12,6 +12,11 @@ include_once '_inc/classes/MyServiceResponse.class.php';
 class App
 {
     /**
+     * Service version.
+     * @var string
+     */
+    private $version;
+    /**
      * @var boolean
      */
     private $debug;
@@ -48,8 +53,9 @@ class App
      */
     private $aliases = array();
 
-    public function __construct($debug=false, $props=array())
+    public function __construct($debug=false, $props=array(), $version='1')
     {
+        $this->version($version);
         $this->debug($debug);
 
         foreach($props as $key=>$val)
@@ -74,8 +80,17 @@ class App
         }
     }
 
-    public static function getDefaultConfig()
+    public static function getDefaultConfig($version=1)
     {
+        switch ((int)$version) {
+            case 2:
+                return array(
+                    'autoopen' => false,
+                    'tokenlifetime' => 90,
+                    'tokenlength' => 64,
+                );
+        }
+
         return array(
             'autoopen' => false,
             'tokenlifetime' => 90,
@@ -83,9 +98,9 @@ class App
             );
     }
 
-    public static function getConfig($q)
+    public static function getConfig($q, $version=1)
     {
-        $config = self::getDefaultConfig();
+        $config = self::getDefaultConfig($version);
 
         $filename = 'q/' . LimpiarData($q) . '/config.yml';
         if (is_file($filename)) {
@@ -237,7 +252,7 @@ class App
                         include $filename;
                     }
 
-                    $config = self::getConfig($this->q);
+                    $config = self::getConfig($this->q, $this->version);
 
                     \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$this->q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlength']);
 
@@ -280,7 +295,10 @@ class App
                     {
                         case 'open':
                             $this->session->Set($token, 'sessid');
-                            $app->doResult(\MyServiceResponse::STATUS_OK, $token);
+                            $app->doResult(
+                                \MyServiceResponse::STATUS_OK,
+                                $this->version > 1 ? ['token' => $token, 'tokenlifetime' => $config['tokenlifetime']] : $token
+                            );
                             break;
                         case 'close':
                             $app->doResult(\MyServiceResponse::STATUS_OK, null);
@@ -364,6 +382,16 @@ class App
         echo $content;
 
         exit; //!!!
+    }
+
+    public function version($version=null)
+    {
+        if(!is_null($version))
+        {
+            $this->version = is_int($version) ? $version : (int)str_ireplace(array('v', '.'), '', $version);
+        }
+
+        return $this->version;
     }
 
     public function debug($debug=null)
