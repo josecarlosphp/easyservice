@@ -148,13 +148,44 @@ class App
         return $this->clientIp;
     }
 
-    public function run()
+    public function run($cipher = 'aes-128-gcm')
     {
         global $app; //Para que esté disponible, por ejemplo para $app->debugging()
 
-        if(empty($app))
-        {
+        if (empty($app)) {
             $app = $this; //Por si la variable se ha declarado con otro nombre
+        }
+
+        //Desencriptar
+        if (array_key_exists('token', $_REQUEST) && array_key_exists('data', $_REQUEST) && array_key_exists('krip', $_REQUEST)) {
+            $options = 0;
+
+            if (in_array($cipher, openssl_get_cipher_methods())) {
+                if (($ivlen = openssl_cipher_iv_length($cipher))) {
+                    $iv = mb_strcut($_REQUEST['krip'], 0, $ivlen);
+                    $tag = mb_strcut($_REQUEST['krip'], $ivlen);
+                    if (($plaintext = openssl_decrypt($_REQUEST['data'], $cipher, $_REQUEST['token'], $options, $iv, $tag)) !== false) {
+                        if (($data = json_decode($plaintext, true)) !== null) {
+                            unset($_REQUEST['data'], $_REQUEST['iv'], $_REQUEST['tag']);
+                            foreach ($data as $key => $val) {
+                                $_REQUEST[$key] = $val;
+                            }
+                        } else {
+                            $this->logging($msg = 'Failed json_decode(): ' . json_last_error_msg());
+                            $this->doResult(\MyServiceResponse::STATUS_ERROR, $msg, 400);
+                        }
+                    } else {
+                        $this->logging($msg = 'Failed openssl_decrypt()');
+                        $this->doResult(\MyServiceResponse::STATUS_ERROR, $msg, 400);
+                    }
+                } else {
+                    $this->logging($msg = 'Failed openssl_cipher_iv_length()');
+                    $this->doResult(\MyServiceResponse::STATUS_ERROR, $msg, 400);
+                }
+            } else {
+                $this->logging($msg = $cipher . ' not in openssl_get_cipher_methods()');
+                $this->doResult(\MyServiceResponse::STATUS_ERROR, $msg, 400);
+            }
         }
 
         $this->q = $this->alias(isset($_GET['q']) ? LimpiarData($_GET['q']) : '');
