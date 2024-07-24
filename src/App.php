@@ -79,7 +79,7 @@ class App
         return array(
             'autoopen' => false,
             'tokenlifetime' => 90,
-            'tokenlenght' => 64,
+            'tokenlength' => 64,
             );
     }
 
@@ -87,14 +87,15 @@ class App
     {
         $config = self::getDefaultConfig();
 
-        $filename = 'q/'.LimpiarData($q).'/config.yml';
-        if(is_file($filename))
-        {
+        $filename = 'q/' . LimpiarData($q) . '/config.yml';
+        if (is_file($filename)) {
             $aux = self::yamlRead($filename);
-            foreach($aux as $key=>$val)
-            {
-                if(array_key_exists($key, $config))
-                {
+            foreach ($aux as $key=>$val) {
+                if ($key == 'tokenlenght') {
+                    $key = 'tokenlength';
+                }
+
+                if (array_key_exists($key, $config)) {
                     $config[$key] = $val;
                 }
             }
@@ -238,7 +239,7 @@ class App
 
                     $config = self::getConfig($this->q);
 
-                    \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$this->q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlenght']);
+                    \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$this->q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlength']);
 
                     switch($action)
                     {
