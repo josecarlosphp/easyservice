@@ -85,6 +85,7 @@ class App
         switch ((int)$version) {
             case 2:
                 return array(
+                    'actionlower' => true,
                     'autoopen' => false,
                     'tokenlifetime' => 90,
                     'tokenlength' => 64,
@@ -92,10 +93,11 @@ class App
         }
 
         return array(
+            'actionlower' => true,
             'autoopen' => false,
             'tokenlifetime' => 90,
             'tokenlength' => 64,
-            );
+        );
     }
 
     public static function getConfig($q, $version=1)
@@ -208,7 +210,8 @@ class App
 
         $this->logging('$_REQUEST = '.var_export($_REQUEST, true));
 
-        $action = isset($_GET['action']) ? mb_strtolower(LimpiarData($_GET['action'])) : '';
+        $action = isset($_GET['action']) ? LimpiarData($_GET['action']) : '';
+
         $params = $_REQUEST; //$_POST
 
         $token = '';
@@ -244,6 +247,12 @@ class App
         {
             if(is_dir('q/'.$this->q))
             {
+                $config = self::getConfig($this->q, $this->version);
+
+                if ($config['actionlower']) {
+                    $action = mb_strtolower($action);
+                }
+
                 if(is_file('q/'.$this->q.'/'.$action.'.php'))
                 {
                     $filename = 'q/'.$this->q.'/_inc/functions.inc.php';
@@ -251,8 +260,6 @@ class App
                     {
                         include $filename;
                     }
-
-                    $config = self::getConfig($this->q, $this->version);
 
                     \MySession::Init(ponerBarra(getcwd().'/'.$this->dirSess).$this->q.'/', $config['tokenlifetime'], $config['tokenlifetime'] == 0 ? 0 : 1, 1, $config['tokenlength']);
 
